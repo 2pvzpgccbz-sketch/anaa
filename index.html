@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Animation - بحبك يا سمسم ❤️</title>
+    <style>
+        /* =========================================================================
+           SECTION 1: RESET & BASE STYLING (الأساسيات وتنسيق الصفحة)
+           ========================================================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-pink: #ff4d6d;
+            --deep-red: #ff1a40;
+            --glow-pink: rgba(255, 77, 109, 0.65);
+            --soft-pink: #ffd6de;
+            --dark-bg-1: #1f050a;
+            --dark-bg-2: #0a0a0a;
+            --panel-bg: rgba(26, 26, 26, 0.85);
+            --glass-bg: rgba(255, 77, 109, 0.12);
+            --border-pink: rgba(255, 77, 109, 0.45);
+        }
+
+        body {
+            background: radial-gradient(circle at center, var(--dark-bg-1) 0%, var(--dark-bg-2) 100%);
+            margin: 0;
+            padding: 0 50px;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+            color: #ffffff;
+        }
+
+        /* =========================================================================
+           SECTION 1.5: PASSWORD GATE SCREEN (شاشة كلمة السر السوداء في أول الكود)
+           ========================================================================= */
+        #password-gate {
+            position: fixed;
+            inset: 0;
+            background: #050505;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            padding: 24px;
+            text-align: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        #password-gate.unlocked-gate {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .password-prompt-text {
+            font-size: 32px;
+            font-weight: 800;
+            color: #ffffff;
+            text-shadow: 0 0 18px rgba(255, 77, 109, 0.65);
+            transition: color 0.25s ease, transform 0.25s ease;
+        }
+
+        .password-prompt-text.error-state {
+            color: #ff2e4c;
+            text-shadow: 0 0 22px rgba(255, 26, 64, 0.9);
+            animation: shakePrompt 0.35s ease;
+        }
+
+        .password-prompt-text.success-state {
+            color: #ffd6de;
+            text-shadow: 0 0 22px rgba(255, 77, 109, 0.95);
+        }
+
+        .password-white-input {
+            width: 100%;
+            max-width: 390px;
+            padding: 15px 22px;
+            font-size: 20px;
+            font-weight: 700;
+            font-family: inherit;
+            text-align: center;
+            color: #111111;
+            background: #ffffff;
+            border: 3px solid #ff4d6d;
+            border-radius: 16px;
+            outline: none;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.22), 0 0 35px rgba(255, 77, 109, 0.35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .password-white-input:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4), 0 0 45px rgba(255, 77, 109, 0.65);
+        }
+
+        .password-submit-btn {
+            background: linear-gradient(135deg, #ff1a40, #ff4d6d);
+            color: #ffffff;
+            border: 2px solid #ffd6de;
+            border-radius: 35px;
+            padding: 12px 34px;
+            font-size: 19px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.55);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .password-submit-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 32px rgba(255, 77, 109, 0.85);
+        }
+
+        .unlock-song-cta {
+            display: none;
+            background: linear-gradient(135deg, #ff1a40 0%, #ff4d6d 60%, #ff758f 100%);
+            color: #ffffff;
+            border: 3px solid #ffd6de;
+            border-radius: 50px;
+            padding: 18px 46px;
+            font-size: 26px;
+            font-weight: 900;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 0 35px rgba(255, 26, 64, 0.85), 0 0 70px rgba(255, 77, 109, 0.55);
+            animation: massivePulse 1.6s infinite alternate ease-in-out;
+        }
+
+        .unlock-song-cta.show-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        @keyframes shakePrompt {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        /* =========================================================================
+           SECTION 2: TOP LAUNCH OVERLAY (شاشة البداية وزر تشغيل الأغنية الضخم فوق)
+           ========================================================================= */
+        #start-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top center, rgba(45, 6, 15, 0.96) 0%, rgba(10, 10, 10, 0.98) 100%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 48px;
+            gap: 24px;
+            backdrop-filter: blur(10px);
+            transition: opacity 0.7s ease, visibility 0.7s ease, transform 0.7s ease;
+        }
+
+        #start-overlay.hidden-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-25px);
+            pointer-events: none;
+        }
+
+        .massive-start-btn {
+            background: linear-gradient(135deg, #ff1a40 0%, #ff4d6d 50%, #ff758f 100%);
+            color: #ffffff;
+            border: 3px solid rgba(255, 214, 222, 0.85);
+            border-radius: 60px;
+            padding: 24px 68px;
+            font-size: 34px;
+            font-weight: 900;
+            font-family: inherit;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow:
+                0 0 35px rgba(255, 26, 64, 0.85),
+                0 0 75px rgba(255, 77, 109, 0.55),
+                inset 0 2px 12px rgba(255, 255, 255, 0.45);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+            animation: massivePulse 1.8s infinite alternate ease-in-out;
+            z-index: 2005;
+        }
+
+        .massive-start-btn:hover {
+            transform: scale(1.06);
+            filter: brightness(1.08);
+            box-shadow:
+                0 0 45px rgba(255, 26, 64, 1),
+                0 0 95px rgba(255, 77, 109, 0.8),
+                inset 0 2px 16px rgba(255, 255, 255, 0.65);
+        }
+
+        .massive-start-btn:active {
+            transform: scale(0.97);
+        }
+
+        .massive-start-subhint {
+            color: var(--soft-pink);
+            font-size: 18px;
+            opacity: 0.9;
+            text-shadow: 0 0 12px rgba(255, 77, 109, 0.5);
+            letter-spacing: 0.3px;
+        }
+
+        @keyframes massivePulse {
+            0% {
+                transform: scale(1);
+                box-shadow:
+                    0 0 30px rgba(255, 26, 64, 0.75),
+                    0 0 65px rgba(255, 77, 109, 0.45);
+            }
+            100% {
+                transform: scale(1.035);
+                box-shadow:
+                    0 0 45px rgba(255, 26, 64, 0.95),
+                    0 0 90px rgba(255, 77, 109, 0.75);
+            }
+        }
+
+        /* =========================================================================
+           SECTION 3: FLOATING BACKGROUND HEARTS & ATMOSPHERE
+           (القلوب الطائرة والأجواء المتوهجة في الخلفية)
+           ========================================================================= */
+        .bg-hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -50px;
+            color: rgba(255, 77, 109, 0.4);
+            animation: flyUp linear infinite;
+            user-select: none;
+        }
+
+        @keyframes flyUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .atmosphere-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 1;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(255, 26, 64, 0.14), transparent 45%),
+                radial-gradient(circle at 80% 75%, rgba(255, 77, 109, 0.14), transparent 45%);
+            animation: atmosphereBreath 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes atmosphereBreath {
+            0% {
+                opacity: 0.65;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.04);
+            }
+        }
+
+        /* =========================================================================
+           SECTION 4: SIDE PHOTO COLUMNS (تنسيق أعمدة الصور على اليمين والشمال)
+           ========================================================================= */
+        .photos-column {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            z-index: 2;
+        }
+
+        .photo-box {
+            width: 165px;
+            height: 165px;
+            border-radius: 20px;
+            border: 2px solid #ff4d6d;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 18px rgba(255, 77, 109, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: float 4s ease-in-out infinite;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-box:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        .photo-box:nth-child(3) {
+            animation-delay: 2s;
+        }
+
+        .photo-box:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 0 30px rgba(255, 77, 109, 0.9);
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* =========================================================================
+           SECTION 5: CENTER STAGE, CANVAS HEART, DESCENDING STREAM & NAMES
+           (المنتصف: زرار الأغنية + القلب + المستطيل الأوسط للنزول + الأسماء والكلام)
+           ========================================================================= */
+        .center-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            z-index: 2;
+            max-width: 720px;
+            width: 100%;
+        }
+
+        .music-control {
+            background: rgba(255, 77, 109, 0.15);
+            border: 1px solid #ff4d6d;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 15px rgba(255, 77, 109, 0.3);
+            transition: 0.3s;
+            font-family: inherit;
+        }
+
+        .music-control:hover {
+            background: #ff4d6d;
+        }
+
+        /* منطقة رسم القلب المتوهج المستوحاة من الفيديو */
+        .heart-canvas-wrapper {
+            position: relative;
+            width: 230px;
+            height: 195px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 0 18px rgba(255, 50, 75, 0.65));
+        }
+
+        #heart-canvas {
+            width: 230px;
+            height: 195px;
+            display: block;
+        }
+
+        .heart-step-badge {
+            position: absolute;
+            bottom: -4px;
+            background: rgba(20, 5, 10, 0.82);
+            border: 1px solid rgba(255, 77, 109, 0.55);
+            color: #ff9eb0;
+            font-size: 12px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.4px;
+            pointer-events: none;
+        }
+
+        /* المستطيل الفاضي اللي في النص: ينزل جواه الكلام والصور وعناوينها ولا يظهر فاضياً */
+        .descending-feed-stage {
+            position: relative;
+            width: 100%;
+            max-width: 620px;
+            height: 250px;
+            overflow: hidden;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255, 77, 109, 0.14) 0%, rgba(20, 5, 10, 0.68) 100%);
+            border: 1.5px solid rgba(255, 77, 109, 0.52);
+            box-shadow:
+                inset 0 0 32px rgba(255, 26, 64, 0.24),
+                0 0 24px rgba(255, 77, 109, 0.24);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .box-spotlight-photo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(34, 6, 14, 0.92);
+            border: 1.5px solid rgba(255, 117, 143, 0.7);
+            border-radius: 18px;
+            padding: 8px 18px 8px 10px;
+            cursor: pointer;
+            box-shadow: 0 0 18px rgba(255, 77, 109, 0.42);
+            z-index: 2;
+        }
+
+        .box-spotlight-photo img {
+            width: 68px;
+            height: 68px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 1.5px solid #ff758f;
+        }
+
+        .box-spotlight-caption {
+            color: #ffd6de;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .descending-item {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -85px);
+            pointer-events: none;
+            animation: scrollDownInsideBox var(--fall-duration, 10.5s) linear forwards;
+            z-index: 3;
+            max-width: 92%;
+        }
+
+        .descending-text-card {
+            background: rgba(42, 7, 16, 0.92);
+            border: 1px solid rgba(255, 117, 143, 0.65);
+            color: #ffd6de;
+            padding: 10px 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.5;
+            box-shadow: 0 0 16px rgba(255, 77, 109, 0.4);
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.75);
+        }
+
+        .descending-photo-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(28, 6, 12, 0.94);
+            border: 1.5px solid #ff4d6d;
+            border-radius: 16px;
+            padding: 7px 14px 7px 8px;
+            box-shadow: 0 0 18px rgba(255, 77, 109, 0.5);
+            pointer-events: auto;
+            cursor: pointer;
+        }
+
+        .descending-photo-card img {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid #ff758f;
+        }
+
+        .descending-photo-title {
+            color: #ff9eb0;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        @keyframes scrollDownInsideBox {
+            0% {
+                transform: translate(-50%, -85px) scale(0.95);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translate(-50%, 10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, 275px) scale(0.97);
+                opacity: 0;
+            }
+        }
+
+        /* شريط الأسماء المتصاعدة والمستمرة حتى نهاية الأغنية */
+        .streaming-names-stage {
+            position: relative;
+            width: 100%;
+            max-width: 560px;
+            height: 92px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: linear-gradient(180deg, rgba(255, 77, 109, 0.08) 0%, rgba(255, 77, 109, 0.18) 100%);
+            border: 1px solid rgba(255, 77, 109, 0.38);
+            box-shadow: inset 0 0 25px rgba(255, 26, 64, 0.16);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box-anchor-name {
+            color: #ff9eb0;
+            font-size: 20px;
+            font-weight: 800;
+            text-shadow: 0 0 12px rgba(255, 77, 109, 0.75);
+            z-index: 2;
+        }
+
+        .rising-name-item {
+            position: absolute;
+            bottom: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 800;
+            color: #ff6b86;
+            text-shadow:
+                0 0 10px rgba(255, 77, 109, 0.9),
+                0 0 24px rgba(255, 26, 64, 0.7);
+            white-space: nowrap;
+            pointer-events: none;
+            animation: riseUpName var(--rise-duration, 7.4s) linear forwards;
+            z-index: 3;
+        }
+
+        @keyframes riseUpName {
+            0% {
+                transform: translate(-50%, 0) scale(0.85);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -18px) scale(1.02);
+            }
+            80% {
+                opacity: 0.95;
+            }
+            100% {
+                transform: translate(-50%, -145px) scale(1.12);
+                opacity: 0;
+            }
+        }
+
+        .text-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .love-text {
+            color: #ff4d6d;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff4d6d, 0 0 25px #ff1a40;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        /* صندوق الرسائل المتغيرة */
+        .sweet-quote {
+            margin-top: 2px;
+            color: #ffd6de;
+            font-size: 18px;
+            background: rgba(255, 77, 109, 0.12);
+            padding: 10px 24px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 77, 109, 0.4);
+            text-align: center;
+            min-width: 320px;
+            transition: opacity 0.5s ease;
+        }
+
+        /* =========================================================================
+           SECTION 6: END OF SONG MESSAGE ("يا رب يكون عجبك")
+           ========================================================================= */
+        #song-ending-banner {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(35, 5, 12, 0.94) 0%, rgba(8, 8, 8, 0.97) 100%);
+            z-index: 1500;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            text-align: center;
+            padding: 30px;
+            backdrop-filter: blur(8px);
+            animation: fadeInEnding 1s ease forwards;
+        }
+
+        #song-ending-banner.visible {
+            display: flex;
+        }
+
+        .ending-title {
+            font-size: 54px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow:
+                0 0 20px #ff4d6d,
+                0 0 45px #ff1a40,
+                0 0 80px rgba(255, 26, 64, 0.8);
+            animation: endingFloat 2.4s ease-in-out infinite;
+        }
+
+        .ending-sub {
+            font-size: 22px;
+            color: #ffd6de;
+            opacity: 0.9;
+        }
+
+        .replay-btn {
+            margin-top: 10px;
+            background: linear-gradient(135deg, #ff1a40, #ff4d6d);
+            color: #fff;
+            border: 2px solid #ffd6de;
+            border-radius: 35px;
+            padding: 14px 36px;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(255, 77, 109, 0.65);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .replay-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 40px rgba(255, 77, 109, 0.95);
+        }
+
+        @keyframes fadeInEnding {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes endingFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+            50% {
+                transform: translateY(-10px) scale(1.04);
+            }
+        }
+
+        /* =========================================================================
+           SECTION 7: LIGHTBOX MODAL (تكبير الصورة عند الضغط عليها)
+           ========================================================================= */
+        #lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        #lightbox img {
+            max-width: 85%;
+            max-height: 80%;
+            border-radius: 20px;
+            border: 3px solid #ff4d6d;
+            box-shadow: 0 0 40px #ff4d6d;
+        }
+
+        #lightbox-caption {
+            color: #ffd6de;
+            font-size: 20px;
+            font-weight: bold;
+            text-shadow: 0 0 12px #ff4d6d;
+        }
+
+        /* =========================================================================
+           SECTION 8: KEYFRAME ANIMATIONS (الحركات والنبضات)
+           ========================================================================= */
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+                opacity: 0.85;
+            }
+            to {
+                transform: scale(1.08);
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- =====================================================================
+         شاشة البداية السوداء في أول الكود: خانة بيضاء وكلمة السر "بحبك يا سونا"
+         ===================================================================== -->
+    <div id="password-gate" role="dialog" aria-modal="true" aria-label="شاشة كلمة السر">
+        <div id="password-prompt" class="password-prompt-text">اكتبي كلمه السر يا سوسو</div>
+        <input
+            type="text"
+            id="password-input"
+            class="password-white-input"
+            placeholder="اكتبي كلمة السر هنا..."
+            autocomplete="off"
+            onkeydown="if(event.key==='Enter'){ verifySecretPassword(); }"
+        >
+        <button type="button" id="password-check-btn" class="password-submit-btn" onclick="verifySecretPassword()">
+            تأكيد كلمة السر
+        </button>
+        <button type="button" id="unlock-play-song-btn" class="unlock-song-cta" onclick="unlockAndLaunchSong()">
+            <span>▶️</span>
+            <span>تشغيل الأغنية</span>
+        </button>
+    </div>
+
+    <!-- =====================================================================
+         شاشة البداية العلوية: زر تشغيل الأغنية الضخم فوق قبل بدء أي شيء
+         ===================================================================== -->
+    <div id="start-overlay" role="dialog" aria-modal="true" aria-label="شاشة تشغيل الأغنية">
+        <button id="massive-play-btn" class="massive-start-btn" type="button" onclick="startExperience()">
+            <span>▶️</span>
+            <span>تشغيل الأغنية</span>
+        </button>
+        <div class="massive-start-subhint">اضغط على زر تشغيل الأغنية في الأعلى لبدء التشغيل والعرض بالكامل ❤️</div>
+    </div>
+
+    <!-- 🎵 ملف الأغنية: حط اسم ملف الأغنية هنا مكان song.mp3 🎵 -->
+    <audio id="bg-music" loop="false">
+        <source src="02.Ana_Ayesh.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- إضاءات الأجواء والقلوب الطائرة -->
+    <div class="atmosphere-glow"></div>
+    <div class="bg-hearts" id="bg-hearts"></div>
+
+    <!-- العمود اليمين (3 صور) -->
+    <div class="photos-column">
+        <div class="photo-box" onclick="openLightbox(this, 'أجمل بداية ليا مع سمسم ❤️')">
+            <img src="1.jpeg" alt="صورة 1">
+        </div>
+        <div class="photo-box" onclick="openLightbox(this, 'ضحكتك اللي بتنور أيامي ✨')">
+            <img src="3.jpeg" alt="صورة 2">
+        </div>
+        <div class="photo-box" onclick="openLightbox(this, 'يا سنيوريتا قلبي وحياتي 💖')">
+            <img src="2.jpeg" alt="صورة 3">
+        </div>
+    </div>
+
+    <!-- المنتصف: زرار الأغنية + القلب + المستطيل الأوسط للنزول + الأسماء والكلام -->
+    <div class="center-stage">
+        <button class="music-control" id="music-btn" onclick="toggleMusic()">
+            ⏸️ إيقاف الأغنية مؤقتاً
+        </button>
+
+        <!-- لوحة رسم القلب المتوهج بخطوات الفيديو -->
+        <div class="heart-canvas-wrapper">
+            <canvas id="heart-canvas" width="230" height="195"></canvas>
+            <div class="heart-step-badge" id="heart-step-label">في انتظار التشغيل...</div>
+        </div>
+
+        <!-- المستطيل الفاضي اللي في النص: يعرض صورة وعنوانها باستمرار + ينزل جواه الكلام والصور -->
+        <div class="descending-feed-stage" id="descending-feed-stage" aria-live="polite">
+            <div class="box-spotlight-photo" id="box-spotlight-photo" onclick="openSpotlightInLightbox()">
+                <img id="box-spotlight-img" src="1.jpeg" alt="صورة سمسم">
+                <span class="box-spotlight-caption" id="box-spotlight-caption">ذكرى حلوة مع سمسم ❤️</span>
+            </div>
+        </div>
+
+        <!-- مساحة الأسماء والكلمات التي تظل تصعد وتظهر حتى نهاية الأغنية -->
+        <div class="streaming-names-stage" id="streaming-names-stage" aria-live="polite">
+            <div class="box-anchor-name" id="box-anchor-name">بحبك يا سمسم والله 💖</div>
+        </div>
+
+        <div class="text-column">
+            <div class="love-text">بحبك يا سمسم ❤️</div>
+            <div class="love-text">بحبك يا سمسم ❤️</div>
+            <div class="love-text">بحبك يا سمسم ❤️</div>
+        </div>
+
+        <div class="sweet-quote" id="quote-box">بحبك يا سمسم والله ومحبتش غيرك واعمل ايه في شوقي وهوايا ❤️</div>
+    </div>
+
+    <!-- العمود الشمال (3 صور) -->
+    <div class="photos-column">
+        <div class="photo-box" onclick="openLightbox(this, 'شوقي ليكي مالوش حدود 🌸')">
+            <img src="4.jpeg" alt="صورة 4">
+        </div>
+        <div class="photo-box" onclick="openLightbox(this, 'ومش قادر على بعدك أبداً 💕')">
+            <img src="5.jpeg" alt="صورة 5">
+        </div>
+        <div class="photo-box" onclick="openLightbox(this, 'بحبك يا بت يا أحلى سمسم ❤️')">
+            <img src="6.jpeg" alt="صورة 6">
+        </div>
+    </div>
+
+    <!-- رسالة النهاية بعد انتهاء الأغنية بالكامل -->
+    <div id="song-ending-banner" aria-live="assertive">
+        <div class="ending-title">يا رب يكون عجبك ❤️</div>
+        <div class="ending-sub">من القلب إلى قلبك يا سمسم ✨</div>
+        <button class="replay-btn" type="button" onclick="replayExperience()">🔁 إعادة التشغيل من البداية</button>
+    </div>
+
+    <!-- نافذة تكبير الصورة -->
+    <div id="lightbox" onclick="this.style.display='none'">
+        <img id="lightbox-img" src="">
+        <div id="lightbox-caption"></div>
+    </div>
+
+    <script>
+        /* =====================================================================
+           SECTION 0: PASSWORD GATE CONTROLLER (التحقق من كلمة السر في أول الكود)
+           ===================================================================== */
+        const EXPECTED_PASSWORD = 'بحبك يا سونا';
+        const passwordGate = document.getElementById('password-gate');
+        const passwordPrompt = document.getElementById('password-prompt');
+        const passwordInput = document.getElementById('password-input');
+        const passwordCheckBtn = document.getElementById('password-check-btn');
+        const unlockPlaySongBtn = document.getElementById('unlock-play-song-btn');
+
+        function normalizeArabicInput(val) {
+            return String(val || '')
+                .trim()
+                .replace(/\s+/g, ' ');
+        }
+
+        function verifySecretPassword() {
+            const entered = normalizeArabicInput(passwordInput.value);
+            if (entered === EXPECTED_PASSWORD) {
+                passwordPrompt.textContent = 'طب شغلي الاغنيه يا قلب سونا';
+                passwordPrompt.classList.remove('error-state');
+                passwordPrompt.classList.add('success-state');
+                passwordInput.style.display = 'none';
+                passwordCheckBtn.style.display = 'none';
+                unlockPlaySongBtn.classList.add('show-cta');
+            } else {
+                passwordPrompt.textContent = 'غلط';
+                passwordPrompt.classList.remove('success-state');
+                passwordPrompt.classList.add('error-state');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+
+        function unlockAndLaunchSong() {
+            passwordGate.classList.add('unlocked-gate');
+            startExperience();
+        }
+
+        /* =====================================================================
+           SECTION A: AUDIO & START SCREEN CONTROLLER (التحكم في الأغنية والبداية)
+           ===================================================================== */
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const startOverlay = document.getElementById('start-overlay');
+        const endingBanner = document.getElementById('song-ending-banner');
+        let isPlaying = false;
+        let hasStartedOnce = false;
+        let songEndedTriggered = false;
+
+        // إيقاف التشغيل التلقائي قبل اجتياز شاشة كلمة السر في الأول
+        window.addEventListener('DOMContentLoaded', () => {
+            music.pause();
+            isPlaying = false;
+            musicBtn.innerHTML = '▶️ تشغيل الأغنية';
+        });
+
+        // عند الضغط على زر "تشغيل الأغنية" الضخم في الأعلى
+        function startExperience() {
+            hasStartedOnce = true;
+            songEndedTriggered = false;
+            endingBanner.classList.remove('visible');
+            startOverlay.classList.add('hidden-overlay');
+
+            music.currentTime = 0;
+            music.play().then(() => {
+                isPlaying = true;
+                musicBtn.innerHTML = '⏸️ إيقاف الأغنية مؤقتاً';
+            }).catch(() => {
+                isPlaying = false;
+                musicBtn.innerHTML = '▶️ تشغيل الأغنية';
+            });
+
+            startHeartSequence();
+            startNameStream();
+            startDescendingStream();
+        }
+
+        // لو المتصفح منع التشغيل التلقائي، تشتغل في أول ضغطة أو لمسة في الصفحة
+        document.addEventListener('click', function autoPlayOnFirstInteract() {
+            if (!isPlaying && hasStartedOnce) {
+                music.play().then(() => {
+                    isPlaying = true;
+                    musicBtn.innerHTML = '⏸️ إيقاف الأغنية مؤقتاً';
+                }).catch(() => {});
+            }
+            document.removeEventListener('click', autoPlayOnFirstInteract);
+        });
+
+        // زرار إيقاف وتشغيل الأغنية
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.innerHTML = '▶️ تشغيل الأغنية';
+                isPlaying = false;
+            } else {
+                endingBanner.classList.remove('visible');
+                music.play().then(() => {
+                    isPlaying = true;
+                    musicBtn.innerHTML = '⏸️ إيقاف الأغنية مؤقتاً';
+                    if (!hasStartedOnce) {
+                        hasStartedOnce = true;
+                        startOverlay.classList.add('hidden-overlay');
+                        startHeartSequence();
+                        startNameStream();
+                        startDescendingStream();
+                    }
+                }).catch(() => {});
+            }
+        }
+
+        // عند انتهاء الأغنية بالكامل تظهر عبارة "يا رب يكون عجبك" في النهاية خالص
+        music.addEventListener('ended', () => {
+            isPlaying = false;
+            songEndedTriggered = true;
+            musicBtn.innerHTML = '▶️ تشغيل الأغنية';
+            stopNameStream();
+            stopDescendingStream();
+            endingBanner.classList.add('visible');
+        });
+
+        // إعادة التشغيل من البداية بعد انتهاء الأغنية
+        function replayExperience() {
+            endingBanner.classList.remove('visible');
+            songEndedTriggered = false;
+            music.currentTime = 0;
+            music.play().then(() => {
+                isPlaying = true;
+                musicBtn.innerHTML = '⏸️ إيقاف الأغنية مؤقتاً';
+            }).catch(() => {});
+            resetHeartSequence();
+            startHeartSequence();
+            startNameStream();
+            startDescendingStream();
+        }
+
+        /* =====================================================================
+           SECTION B: VIDEO HEART ANIMATION SEQUENCE (رسم القلب ونبضه كما في الفيديو)
+           الخطوات من الفيديو:
+           1. drawBody() - رسم جسم القلب الخارجي المتوهج
+           2. drawAorta() - رسم الشريان الأورطي العلوي
+           3. drawCoronaryArteries() - رسم الشرايين التاجية
+           4. drawVeins() - رسم الأوردة
+           5. fill("red") - ملء القلب باللون الأحمر المتوهج
+           6. beat() - نبض القلب المستمر
+           ===================================================================== */
+        const heartCanvas = document.getElementById('heart-canvas');
+        const ctx = heartCanvas.getContext('2d');
+        const stepLabel = document.getElementById('heart-step-label');
+
+        const heartState = {
+            bodyProgress: 0,
+            aortaProgress: 0,
+            arteriesProgress: 0,
+            veinsProgress: 0,
+            fillProgress: 0,
+            isBeating: false,
+            beatPhase: 0,
+            running: false,
+            rafId: null
+        };
+
+        function resetHeartSequence() {
+            heartState.bodyProgress = 0;
+            heartState.aortaProgress = 0;
+            heartState.arteriesProgress = 0;
+            heartState.veinsProgress = 0;
+            heartState.fillProgress = 0;
+            heartState.isBeating = false;
+            heartState.beatPhase = 0;
+            stepLabel.textContent = 'drawBody()';
+        }
+
+        function traceHeartBodyPath(context, progress = 1) {
+            const totalSteps = 180;
+            const maxSteps = Math.max(2, Math.floor(totalSteps * progress));
+            context.beginPath();
+            for (let i = 0; i <= maxSteps; i++) {
+                const t = (i / totalSteps) * Math.PI * 2;
+                const hx = 16 * Math.pow(Math.sin(t), 3);
+                const hy = -(
+                    13 * Math.cos(t) -
+                    5 * Math.cos(2 * t) -
+                    2 * Math.cos(3 * t) -
+                    Math.cos(4 * t)
+                );
+                const px = 105 + hx * 3.4;
+                const py = 102 + hy * 3.4;
+                if (i === 0) context.moveTo(px, py);
+                else context.lineTo(px, py);
+            }
+            if (progress >= 1) context.closePath();
+        }
+
+        function drawAortaSegment(context, progress) {
+            if (progress <= 0) return;
+            context.save();
+            context.strokeStyle = '#ff5c77';
+            context.lineWidth = 6.5;
+            context.lineCap = 'round';
+            context.shadowColor = '#ff1a40';
+            context.shadowBlur = 14;
+
+            context.beginPath();
+            context.moveTo(102, 55);
+            context.quadraticCurveTo(100, 18, 126, 20);
+            context.quadraticCurveTo(140, 21, 142, 42);
+
+            if (progress > 0.45) {
+                context.moveTo(110, 27);
+                context.lineTo(107, 10);
+                context.moveTo(120, 22);
+                context.lineTo(119, 8);
+                context.moveTo(130, 22);
+                context.lineTo(132, 10);
+            }
+
+            context.stroke();
+            context.restore();
+        }
+
+        function drawCoronaryArteriesSegment(context, progress) {
+            if (progress <= 0) return;
+            context.save();
+            context.strokeStyle = '#ff859b';
+            context.lineWidth = 2.4;
+            context.lineCap = 'round';
+            context.shadowColor = '#ff4d6d';
+            context.shadowBlur = 8;
+
+            const p = Math.min(1, progress);
+            context.beginPath();
+            context.moveTo(105, 76);
+            context.quadraticCurveTo(
+                89,
+                94,
+                80 + (1 - p) * 18,
+                124 - (1 - p) * 26
+            );
+            context.moveTo(92, 91);
+            context.lineTo(107, 109);
+            context.stroke();
+            context.restore();
+        }
+
+        function drawVeinsSegment(context, progress) {
+            if (progress <= 0) return;
+            context.save();
+            context.strokeStyle = '#ff3355';
+            context.lineWidth = 3;
+            context.lineCap = 'round';
+            context.shadowColor = '#ff1a40';
+            context.shadowBlur = 10;
+
+            context.beginPath();
+            context.moveTo(111, 77);
+            context.quadraticCurveTo(127, 95, 136, 122);
+            context.moveTo(124, 91);
+            context.lineTo(113, 113);
+            context.moveTo(117, 52);
+            context.quadraticCurveTo(145, 43, 156, 56);
+            context.stroke();
+            context.restore();
+        }
+
+        function renderHeartFrame() {
+            ctx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+
+            let scale = 1;
+            if (heartState.isBeating) {
+                heartState.beatPhase += 0.11;
+                scale = 1 + Math.sin(heartState.beatPhase) * 0.055 + Math.pow(Math.max(0, Math.sin(heartState.beatPhase * 2)), 6) * 0.04;
+            }
+
+            ctx.save();
+            ctx.translate(heartCanvas.width / 2, heartCanvas.height / 2);
+            ctx.scale(scale, scale);
+            ctx.translate(-heartCanvas.width / 2, -heartCanvas.height / 2);
+
+            if (heartState.fillProgress > 0) {
+                ctx.save();
+                traceHeartBodyPath(ctx, 1);
+                const grad = ctx.createRadialGradient(105, 95, 8, 105, 102, 85);
+                grad.addColorStop(0, `rgba(255, 65, 95, ${heartState.fillProgress})`);
+                grad.addColorStop(0.6, `rgba(235, 18, 48, ${heartState.fillProgress})`);
+                grad.addColorStop(1, `rgba(150, 5, 25, ${heartState.fillProgress})`);
+                ctx.fillStyle = grad;
+                ctx.shadowColor = '#ff1a40';
+                ctx.shadowBlur = 28 * heartState.fillProgress;
+                ctx.fill();
+                ctx.restore();
+            }
+
+            if (heartState.bodyProgress > 0) {
+                ctx.save();
+                traceHeartBodyPath(ctx, heartState.bodyProgress);
+                ctx.strokeStyle = '#ff4d6d';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.shadowColor = '#ff1a40';
+                ctx.shadowBlur = 16;
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            drawAortaSegment(ctx, heartState.aortaProgress);
+            drawCoronaryArteriesSegment(ctx, heartState.arteriesProgress);
+            drawVeinsSegment(ctx, heartState.veinsProgress);
+
+            ctx.restore();
+        }
+
+        function startHeartSequence() {
+            resetHeartSequence();
+            heartState.running = true;
+
+            function stepLoop() {
+                if (!heartState.running) return;
+
+                if (heartState.bodyProgress < 1) {
+                    heartState.bodyProgress = Math.min(1, heartState.bodyProgress + 0.022);
+                    stepLabel.textContent = 'heart.drawBody()';
+                } else if (heartState.aortaProgress < 1) {
+                    heartState.aortaProgress = Math.min(1, heartState.aortaProgress + 0.035);
+                    stepLabel.textContent = 'heart.drawAorta()';
+                } else if (heartState.arteriesProgress < 1) {
+                    heartState.arteriesProgress = Math.min(1, heartState.arteriesProgress + 0.04);
+                    stepLabel.textContent = 'heart.drawCoronaryArteries()';
+                } else if (heartState.veinsProgress < 1) {
+                    heartState.veinsProgress = Math.min(1, heartState.veinsProgress + 0.04);
+                    stepLabel.textContent = 'heart.drawVeins()';
+                } else if (heartState.fillProgress < 1) {
+                    heartState.fillProgress = Math.min(1, heartState.fillProgress + 0.03);
+                    stepLabel.textContent = 'heart.fill("red")';
+                } else {
+                    heartState.isBeating = true;
+                    stepLabel.textContent = 'heart.beat() • سمسم ❤️';
+                }
+
+                renderHeartFrame();
+                heartState.rafId = requestAnimationFrame(stepLoop);
+            }
+
+            stepLoop();
+        }
+
+        renderHeartFrame();
+
+        /* =====================================================================
+           SECTION C: DESCENDING STREAM & CONTINUOUS RISING NAMES UNTIL SONG ENDS
+           (نزول أبطأ وعنصر واحد في كل مرة داخل المستطيل الأوسط حتى يروح ويجي غيره)
+           ===================================================================== */
+        const descendingStage = document.getElementById('descending-feed-stage');
+        const namesStage = document.getElementById('streaming-names-stage');
+        const boxSpotlightImg = document.getElementById('box-spotlight-img');
+        const boxSpotlightCaption = document.getElementById('box-spotlight-caption');
+        const boxAnchorName = document.getElementById('box-anchor-name');
+
+        const customLoveLines = [
+            'بحبك يا سمسم والله ومحبتش غيرك واعمل ايه في شوقي وهوايا ❤️',
+            'انا عايش ومش عايش ومش قادر علي بعدك ومش عايز حبيب بعدك يا سنيوريتا بحبك يا بت 💖',
+            'يا سمسم وجودك في حياتي هو أصدق وأجمل إحساس حسيته ✨',
+            'كل نبضة في قلبي بتنادي باسمك يا أغلى من عمري كله 💕',
+            'مهما عدّت الأيام حبي ليكي بيزيد ومش بيقل أبداً يا سنيوريتا 🌸'
+        ];
+
+        const repeatedPhotoItems = [
+            { src: '1.jpeg', title: 'ذكرى حلوة مع سمسم ❤️' },
+            { src: '3.jpeg', title: 'أجمل ضحكة في الدنيا ✨' },
+            { src: '2.jpeg', title: 'يا سنيوريتا قلبي 💖' },
+            { src: '4.jpeg', title: 'شوقي وهوايا ليكي 💕' },
+            { src: '5.jpeg', title: 'مش قادر على بعدك 🌸' },
+            { src: '6.jpeg', title: 'بحبك يا بت يا سمسم ❤️' }
+        ];
+
+        const risingPhrases = [
+            'سمسم ❤️',
+            'بحبك يا سمسم والله 💖',
+            'يا سنيوريتا ✨',
+            'بحبك يا بت 🌸',
+            'شوقي وهوايا 💕'
+        ];
+
+        let nameStreamTimer = null;
+        let descendingStreamTimer = null;
+        let isDescendingBusy = false;
+        let isRisingBusy = false;
+        let photoCycleIndex = 0;
+        let quoteCycleIndex = 0;
+        let nameCycleIndex = 0;
+        let alternateDescendType = false;
+
+        function openSpotlightInLightbox() {
+            document.getElementById('lightbox-img').src = boxSpotlightImg.src;
+            document.getElementById('lightbox-caption').textContent = boxSpotlightCaption.textContent;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        function updateSpotlightCard() {
+            const currentPhoto = repeatedPhotoItems[photoCycleIndex % repeatedPhotoItems.length];
+            boxSpotlightImg.src = currentPhoto.src;
+            boxSpotlightImg.alt = currentPhoto.title;
+            boxSpotlightCaption.textContent = currentPhoto.title;
+            boxAnchorName.textContent = risingPhrases[nameCycleIndex % risingPhrases.length];
+        }
+
+        function spawnDescendingElement() {
+            if (songEndedTriggered || !isPlaying || isDescendingBusy) return;
+            isDescendingBusy = true;
+            updateSpotlightCard();
+
+            // تناوب منظم بين كلام وصورة بحيث تنزل كل واحدة لوحدها داخل المستطيل وتروح قبل ما تيجي غيرها
+            const showPhoto = alternateDescendType;
+            alternateDescendType = !alternateDescendType;
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'descending-item';
+
+            const fallDurationMs = 10500;
+            wrapper.style.setProperty('--fall-duration', (fallDurationMs / 1000).toFixed(1) + 's');
+            wrapper.style.left = '50%';
+
+            if (showPhoto) {
+                const photoData = repeatedPhotoItems[photoCycleIndex % repeatedPhotoItems.length];
+                photoCycleIndex++;
+
+                const card = document.createElement('div');
+                card.className = 'descending-photo-card';
+                card.onclick = () => {
+                    document.getElementById('lightbox-img').src = photoData.src;
+                    document.getElementById('lightbox-caption').textContent = photoData.title;
+                    document.getElementById('lightbox').style.display = 'flex';
+                };
+
+                const img = document.createElement('img');
+                img.src = photoData.src;
+                img.alt = photoData.title;
+
+                const titleEl = document.createElement('span');
+                titleEl.className = 'descending-photo-title';
+                titleEl.textContent = photoData.title;
+
+                card.appendChild(img);
+                card.appendChild(titleEl);
+                wrapper.appendChild(card);
+            } else {
+                const lineText = customLoveLines[quoteCycleIndex % customLoveLines.length];
+                quoteCycleIndex++;
+
+                const textCard = document.createElement('div');
+                textCard.className = 'descending-text-card';
+                textCard.textContent = lineText;
+                wrapper.appendChild(textCard);
+            }
+
+            descendingStage.appendChild(wrapper);
+
+            setTimeout(() => {
+                wrapper.remove();
+                isDescendingBusy = false;
+                if (isPlaying && !songEndedTriggered) {
+                    descendingStreamTimer = setTimeout(spawnDescendingElement, 450);
+                }
+            }, fallDurationMs);
+        }
+
+        function startDescendingStream() {
+            stopDescendingStream();
+            isDescendingBusy = false;
+            spawnDescendingElement();
+        }
+
+        function stopDescendingStream() {
+            if (descendingStreamTimer) {
+                clearTimeout(descendingStreamTimer);
+                descendingStreamTimer = null;
+            }
+            isDescendingBusy = false;
+        }
+
+        function spawnRisingName() {
+            if (songEndedTriggered || !isPlaying || isRisingBusy) return;
+            isRisingBusy = true;
+
+            const item = document.createElement('div');
+            item.className = 'rising-name-item';
+            item.textContent = risingPhrases[nameCycleIndex % risingPhrases.length];
+            nameCycleIndex++;
+            updateSpotlightCard();
+
+            const riseDurationMs = 7400;
+            item.style.left = '50%';
+            item.style.fontSize = '22px';
+            item.style.setProperty('--rise-duration', (riseDurationMs / 1000).toFixed(1) + 's');
+
+            namesStage.appendChild(item);
+
+            setTimeout(() => {
+                item.remove();
+                isRisingBusy = false;
+                if (isPlaying && !songEndedTriggered) {
+                    nameStreamTimer = setTimeout(spawnRisingName, 400);
+                }
+            }, riseDurationMs);
+        }
+
+        function startNameStream() {
+            stopNameStream();
+            isRisingBusy = false;
+            spawnRisingName();
+        }
+
+        function stopNameStream() {
+            if (nameStreamTimer) {
+                clearTimeout(nameStreamTimer);
+                nameStreamTimer = null;
+            }
+            isRisingBusy = false;
+        }
+
+        /* =====================================================================
+           SECTION D: FLOATING HEARTS, SWEET QUOTES & LIGHTBOX
+           (القلوب الطائرة + الرسائل المتغيرة + تكبير الصور)
+           ===================================================================== */
+        const heartsContainer = document.getElementById('bg-hearts');
+        const heartIcons = ['❤️', '💖', '💕', '💗', '💓'];
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerText = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heart.style.animationDuration = (Math.random() * 4 + 4) + 's';
+            heartsContainer.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 8000);
+        }
+        setInterval(createHeart, 350);
+
+        // تغيير الرسائل الرومانسية كل 4 ثواني
+        const quotes = [
+            "بحبك يا سمسم والله ومحبتش غيرك واعمل ايه في شوقي وهوايا ❤️",
+            "انا عايش ومش عايش ومش قادر علي بعدك ومش عايز حبيب بعدك يا سنيوريتا بحبك يا بت 💖",
+            "إنتي أحلى حاجة حصلتلي في حياتي ✨",
+            "كل يوم معاكي بيكون أحلى من اللي قبله ❤️",
+            "ضحكتك بالدنيا وما فيها يا سمسم 🌸",
+            "ربنا يخليكي ليا وميحرمنيش منك أبداً 🤲❤️",
+            "بحبك النهاردة وبكرة ولآخر العمر 💕"
+        ];
+        let quoteIndex = 0;
+        const quoteBox = document.getElementById('quote-box');
+
+        setInterval(() => {
+            quoteBox.style.opacity = 0;
+            setTimeout(() => {
+                quoteIndex = (quoteIndex + 1) % quotes.length;
+                quoteBox.innerText = quotes[quoteIndex];
+                quoteBox.style.opacity = 1;
+            }, 500);
+        }, 4000);
+
+        // تكبير الصورة عند الضغط عليها
+        function openLightbox(box, customTitle = '') {
+            const imgSrc = box.querySelector('img').src;
+            const altText = box.querySelector('img').alt || '';
+            document.getElementById('lightbox-img').src = imgSrc;
+            document.getElementById('lightbox-caption').textContent = customTitle || altText;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        /* =====================================================================
+           SECTION E: AMBIENT SPARKLE PARTICLES & ANIMATION UTILITIES
+           (مؤثرات بصرية إضافية لإثراء التجربة والحفاظ على الأداء)
+           ===================================================================== */
+        const ambientConfig = {
+            maxSparkles: 36,
+            sparkleColors: ['#ff4d6d', '#ff758f', '#ffd6de', '#ff1a40'],
+            enabled: true
+        };
+
+        function createAmbientSparkle() {
+            if (!ambientConfig.enabled || songEndedTriggered) return;
+            const currentSparkles = document.querySelectorAll('.ambient-sparkle-dot');
+            if (currentSparkles.length >= ambientConfig.maxSparkles) return;
+
+            const dot = document.createElement('span');
+            dot.className = 'ambient-sparkle-dot';
+            const size = (Math.random() * 4 + 2).toFixed(1);
+            dot.style.position = 'fixed';
+            dot.style.width = size + 'px';
+            dot.style.height = size + 'px';
+            dot.style.borderRadius = '50%';
+            dot.style.pointerEvents = 'none';
+            dot.style.zIndex = '1';
+            dot.style.left = (Math.random() * 100) + 'vw';
+            dot.style.top = (Math.random() * 100) + 'vh';
+            dot.style.backgroundColor = ambientConfig.sparkleColors[Math.floor(Math.random() * ambientConfig.sparkleColors.length)];
+            dot.style.boxShadow = '0 0 8px currentColor';
+            dot.style.opacity = '0.65';
+            dot.style.transition = 'opacity 1.6s ease, transform 1.6s ease';
+
+            document.body.appendChild(dot);
+
+            requestAnimationFrame(() => {
+                dot.style.opacity = '0';
+                dot.style.transform = `translateY(${(Math.random() * 24 - 12).toFixed(0)}px) scale(1.4)`;
+            });
+
+            setTimeout(() => {
+                dot.remove();
+            }, 1650);
+        }
+
+        setInterval(createAmbientSparkle, 450);
+
+        /* =====================================================================
+           SECTION F: EXTENDED ANIMATION PRESETS & DIAGNOSTIC HELPERS
+           (إعدادات إضافية للحركة والوقت والمزامنة)
+           ===================================================================== */
+        const animationPresets = {
+            heartDrawSpeed: {
+                bodyStep: 0.022,
+                aortaStep: 0.035,
+                arteriesStep: 0.04,
+                veinsStep: 0.04,
+                fillStep: 0.03
+            },
+            nameStreamSettings: {
+                intervalMs: 7800,
+                minFontSize: 22,
+                maxFontSize: 22,
+                minDurationSec: 7.4,
+                maxDurationSec: 7.4
+            },
+            descendingStreamSettings: {
+                intervalMs: 10950,
+                minDurationSec: 10.5,
+                maxDurationSec: 10.5
+            },
+            endingMessage: {
+                mainText: 'يا رب يكون عجبك ❤️',
+                subText: 'من القلب إلى قلبك يا سمسم ✨'
+            }
+        };
+
+        function getPlaybackSnapshot() {
+            return {
+                hasStartedOnce: hasStartedOnce,
+                isPlaying: isPlaying,
+                songEndedTriggered: songEndedTriggered,
+                currentTime: Number(music.currentTime || 0).toFixed(2),
+                duration: Number(music.duration || 0).toFixed(2),
+                heartBeatActive: heartState.isBeating
+            };
+        }
+
+        function setCustomQuoteList(newQuotes) {
+            if (!Array.isArray(newQuotes) || newQuotes.length === 0) return;
+            quotes.length = 0;
+            newQuotes.forEach((q) => quotes.push(String(q)));
+            quoteIndex = 0;
+            quoteBox.innerText = quotes[0];
+        }
+
+        function addRisingPhrase(phrase) {
+            if (!phrase || typeof phrase !== 'string') return;
+            risingPhrases.push(phrase.trim());
+        }
+
+        // دعم اختصار لوحة المفاتيح مسافة (Space) لتشغيل أو إيقاف الأغنية بسهولة
+        document.addEventListener('keydown', (event) => {
+            if (event.code === 'Space' && document.activeElement.tagName !== 'BUTTON' && document.activeElement.tagName !== 'INPUT') {
+                event.preventDefault();
+                if (!hasStartedOnce) {
+                    startExperience();
+                } else {
+                    toggleMusic();
+                }
+            } else if (event.key === 'Escape') {
+                document.getElementById('lightbox').style.display = 'none';
+            }
+        });
+
+        // مزامنة حالة التشغيل دورياً لضمان ظهور عبارة النهاية عند انتهاء الصوت في جميع المتصفحات
+        setInterval(() => {
+            if (hasStartedOnce && !songEndedTriggered && music.ended) {
+                isPlaying = false;
+                songEndedTriggered = true;
+                musicBtn.innerHTML = '▶️ تشغيل الأغنية';
+                stopNameStream();
+                stopDescendingStream();
+                endingBanner.classList.add('visible');
+            }
+        }, 500);
+    </script>
+</body>
+</html>
